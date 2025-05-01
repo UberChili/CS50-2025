@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -7,6 +8,7 @@ char* get_string(char* prompt);
 int score(char* text);
 
 const int points[] = {1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10};
+// hotdog
 
 int main(void) {
 
@@ -31,14 +33,23 @@ int main(void) {
 }
 
 int score(char* text) {
+    int sum = 0;
     int len = strlen(text);
     if (len == 0 ) {
-        return 0;
+        return sum;
     }
 
-    int sum = 0;
+    int actual = 0;
     for (int i = 0; i < len; i++) {
-        sum += points[i];
+        if (isalpha(text[i])) {
+            if (isupper(text[i])) {
+                actual = text[i] - 'A';
+                sum += points[actual];
+            } else {
+                actual = text[i] - 'a';
+                sum += points[actual];
+            }
+        }
     }
     return sum;
 }
