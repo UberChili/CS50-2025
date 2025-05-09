@@ -1,14 +1,13 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Max number of candidates
 #define MAX 9
 
 // Candidates have name and vote count
-typedef struct
-{
-    char* name;
+typedef struct {
+    char *name;
     int votes;
 } candidate;
 
@@ -19,30 +18,25 @@ candidate candidates[MAX];
 int candidate_count;
 
 // Function prototypes
-int vote(char* name);
+int vote(char *name);
 void print_winner(void);
 char *get_string(char *prompt);
 int get_int(char *prompt);
 
-
-int main(int argc, char* argv[])
-{
+int main(int argc, char *argv[]) {
     // Check for invalid usage
-    if (argc < 2)
-    {
+    if (argc < 2) {
         printf("Usage: plurality [candidate ...]\n");
         return 1;
     }
 
     // Populate array of candidates
     candidate_count = argc - 1;
-    if (candidate_count > MAX)
-    {
+    if (candidate_count > MAX) {
         printf("Maximum number of candidates is %i\n", MAX);
         return 2;
     }
-    for (int i = 0; i < candidate_count; i++)
-    {
+    for (int i = 0; i < candidate_count; i++) {
         candidates[i].name = argv[i + 1];
         candidates[i].votes = 0;
     }
@@ -50,13 +44,11 @@ int main(int argc, char* argv[])
     int voter_count = get_int("Number of voters: ");
 
     // Loop over all voters
-    for (int i = 0; i < voter_count; i++)
-    {
-        char* name = get_string("Vote: ");
+    for (int i = 0; i < voter_count; i++) {
+        char *name = get_string("Vote: ");
 
         // Check for invalid vote
-        if (vote(name) == 1)
-        {
+        if (vote(name) == 1) {
             printf("Invalid vote.\n");
         }
         free(name);
@@ -67,9 +59,8 @@ int main(int argc, char* argv[])
 }
 
 // Update vote totals given a new vote
-int vote(char* name)
-{
-    for(size_t i = 0, n = sizeof(candidates) / sizeof(candidate); i < n; i++) {
+int vote(char *name) {
+    for (size_t i = 0, n = sizeof(candidates) / sizeof(candidate); i < n; i++) {
         if (strcmp(name, candidates[i].name) == 0) {
             candidates[i].votes++;
             return 0;
@@ -80,16 +71,24 @@ int vote(char* name)
 }
 
 // Print the winner (or winners) of the election
-void print_winner(void)
-{
+void print_winner(void) {
     // Find the maximum number of votes
+    int highest = 0;
+    for (size_t i = 0, n = sizeof(candidates) / sizeof(candidate); i < n; i++) {
+        if (candidates[i].votes > highest) {
+            highest = candidates[i].votes;
+        }
+    }
 
-    // Print the candidate (or candidates) with maximum votes
+    for (size_t i = 0, n = sizeof(candidates) / sizeof(candidate); i < n; i++) {
+        if (candidates[i].votes == highest) {
+            printf("%s\n", candidates[i].name);
+        }
+    }
 }
 
 // sort candidates
-void sort_candidates(candidate candidates[]) {
-}
+void sort_candidates(candidate candidates[]) {}
 
 // Gets a string
 char *get_string(char *prompt) {
@@ -121,11 +120,11 @@ char *get_string(char *prompt) {
     return result;
 }
 
-int get_int(char* prompt) {
+int get_int(char *prompt) {
     printf("%s", prompt);
     char input[256];
 
-    while(fgets(input, sizeof input, stdin) == NULL) {
+    while (fgets(input, sizeof input, stdin) == NULL) {
         printf("Error when getting int\n");
     }
 
