@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
 // Update vote totals given a new vote
 int vote(char *name) {
-    for (size_t i = 0, n = sizeof(candidates) / sizeof(candidate); i < n; i++) {
+    for (size_t i = 0; i < candidate_count; i++) {
         if (strcmp(name, candidates[i].name) == 0) {
             candidates[i].votes++;
             return 0;
