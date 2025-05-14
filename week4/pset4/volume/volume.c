@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define CHANNEL_NUM_OFFSIZE 22
+#define BITS_PER_SAMPLE_OFFSIZE 34
+
 // Number of bytes in .wav header
 /* const int HEADER_SIZE = 44; */
 const size_t HEADER_SIZE = 44;
@@ -32,23 +35,32 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    /* float factor = atof(argv[3]); */
+    float factor = atof(argv[3]);
 
     // TODO: Copy header from input file to output file
-    // first let's try to understand how to "read" the header
-    // (HEADER_SIZE is an int of value 44)
     char *buff = malloc(HEADER_SIZE);
     if (fread(buff, HEADER_SIZE, 1, input) == 0) {
-        printf("Couldnt read header\n");
+        printf("Couldn't read header\n");
     }
 
-    for (size_t i = 0, n = HEADER_SIZE; i < n; i++) {
-        printf("%zu\t%02X\n", i + 1, (unsigned char) buff[i]);
-    }
+    /* for (size_t i = 0, n = HEADER_SIZE; i < n; i++) { */
+    /*     printf("%zu\t%02X\n", i + 1, (unsigned char) buff[i]); */
+    /* } */
+    /* uint16_t num_channels = *(uint16_t*) (buff + CHANNEL_NUM_OFFSIZE); */
+    /* uint16_t bits_per_sample = *(uint16_t*) (buff + BITS_PER_SAMPLE_OFFSIZE); */
 
+    if (fwrite(buff, HEADER_SIZE, 1, output) < 1) {
+        printf("Couldn't write header\n");
+    }
     free(buff);
 
+
     // TODO: Read samples from input file and write updated data to output file
+    uint16_t sample;
+    while (fread(&sample, sizeof(uint16_t), 1, input)) {
+        sample *= factor;
+        fwrite(&sample, sizeof(uint16_t), 1, output);
+    }
 
     // Close files
     fclose(input);
