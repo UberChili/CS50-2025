@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "png.h"
+#include "chunk.h"
 
 /* const uint8_t png_signature[] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A}; */
 const uint8_t png_signature[] = {137, 80, 78, 71, 13, 10, 26, 10 };
@@ -22,10 +23,15 @@ int main(int argc, char *argv[]) {
     // Read infile's PNGSIGNATUREHEADER and determine if
     // it is a valid PNG file
     PNGSIGNATUREHEADER sh;
-    fread(&sh, sizeof(PNGSIGNATUREHEADER), 1, inptr);
+    if (fread(&sh, sizeof(PNGSIGNATUREHEADER), 1, inptr) != 1) {
+        printf("Error: Not enough bytes read for Signature Header\nNot a valid PNG file.\n");
+        return 1;
+    }
+
 
     for (size_t i = 0, n = sizeof(sh.values) / sizeof(uint8_t); i < n; i++) {
         /* printf("%02x ", sh.values[i]); */
+        printf("%u ", sh.values[i]);
         if (sizeof sh.values != sizeof png_signature) {
             printf("Not a valid PNG file\n");
             return 1;
@@ -35,9 +41,14 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
-    printf("Valid PNG file\n");
+    printf("\nValid PNG file\n");
 
     // Read the first next chunk
+    CHUNK first_chunk = get_chunk();
+    if (first_chunk == NULL) {
+
+    }
+
 
     fclose(inptr);
     return 0;
