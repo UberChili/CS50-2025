@@ -2,13 +2,11 @@
 #include <stdint.h>
 
 typedef struct {
-    uint8_t type_code[4];
-} __attribute__((__packed__))
-CHUNK_TYPE;
+    /* uint8_t type_code[4]; */
+    char type_code[4];
+} __attribute__((__packed__)) CHUNK_TYPE;
 
-int is_valid(CHUNK_TYPE) {
-    return 0;
-}
+int is_valid(CHUNK_TYPE) { return 0; }
 
 int is_critical(CHUNK_TYPE chunk_type) {
     if (sizeof chunk_type.type_code != 4) {
