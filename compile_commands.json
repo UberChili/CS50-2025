@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "/home/rocco/Programming/CS50-2025/week4/pset4/filter-less/experiment",
+    "command": "gcc -c -Iinclude -Wall -Wextra -Werror -pedantic src/png.c",
+    "file": "src/png.c"
+  },
+  {
+    "directory": "/home/rocco/Programming/CS50-2025/week4/pset4/filter-less/experiment",
+    "command": "gcc -c -Iinclude -Wall -Wextra -Werror -pedantic src/reading.c",
+    "file": "src/reading.c"
+  }
+]
