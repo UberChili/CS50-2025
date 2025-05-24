@@ -4,9 +4,7 @@
 #include "chunk.h"
 #include "png.h"
 
-/* const uint8_t png_signature[] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A,
- * 0x0A}; */
-const uint8_t png_signature[] = {137, 80, 78, 71, 13, 10, 26, 10};
+/* const uint8_t png_signature[] = {137, 80, 78, 71, 13, 10, 26, 10}; */
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
@@ -24,24 +22,11 @@ int main(int argc, char *argv[]) {
     // Read infile's PNGSIGNATUREHEADER and determine if
     // it is a valid PNG file
     PNGSIGNATUREHEADER sh;
-    if (fread(&sh, sizeof(PNGSIGNATUREHEADER), 1, inptr) != 1) {
-        printf("Error: Not enough bytes read for Signature Header\nNot a valid "
-               "PNG file.\n");
-        return 1;
+    if (!valid_SH(&sh, inptr)) {
+        printf("Not a valid PNG File.\n");
+    } else {
+        printf("Valid PNG file.\n");
     }
-
-    for (size_t i = 0, n = sizeof(sh.values) / sizeof(uint8_t); i < n; i++) {
-        printf("%02x ", sh.values[i]);
-        /* printf("%u ", sh.values[i]); */
-        if (sizeof sh.values != sizeof png_signature) {
-            printf("Not a valid PNG file\n");
-            return 1;
-        } else if (sh.values[i] != png_signature[i]) {
-            printf("Not a valid PNG file\n");
-            return 1;
-        }
-    }
-    printf("\nValid PNG file\n");
 
     // Read the first next chunk
     uint32_t length;
@@ -57,22 +42,28 @@ int main(int argc, char *argv[]) {
 
     /* uint8_t data[length]; */
     uint8_t *data = malloc(sizeof(uint8_t) * length);
-    if (fread(&data, sizeof(data), 1, inptr) == 0) {
-        printf("Error: Couldn't read bytes for data\n");
+    if (data == NULL) {
+        printf("Error allocating space for chunk data\n");
+        free(data);
         return 1;
     }
-    /* uint8_t crc[4]; */
-    uint8_t *crc = malloc(sizeof(uint8_t) * 4);
-    if (fread(&crc, sizeof(crc), 1, inptr) == 0) {
+    if (fread(data, sizeof(uint8_t), length, inptr) == length) {
+        printf("Error: Couldn't read bytes for data\n");
+        free(data);
+        return 1;
+    }
+
+    uint8_t crc[4];
+    if (fread(&crc, 1, 4, inptr) == 4) {
         printf("Error: Couldn't read bytes for crc\n");
         return 1;
     }
 
     // do some sort of checking here
-    printf("Chunk Type: %s\n", chunk_type.type_code);
+    printf("Chunk Type: %.4s\n", chunk_type.type_code);
 
+    // Free shit and close file
     free(data);
-    free(crc);
     fclose(inptr);
     return 0;
 }
