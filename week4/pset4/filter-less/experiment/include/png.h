@@ -1,3 +1,7 @@
+#ifndef PNG_H
+#define PNG_H
+
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -8,3 +12,5 @@ typedef struct {
 
 // Checks for a valid Signature Header
 bool valid_SH(PNGSIGNATUREHEADER *signature_header, FILE *file);
+
+#endif

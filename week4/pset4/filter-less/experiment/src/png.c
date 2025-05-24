@@ -1,7 +1,3 @@
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-
 #include "png.h"
 
 // PNG Signature. It is always the following values
