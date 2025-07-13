@@ -25,9 +25,56 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    const char *input = argv[1];
+
     FILE *fptr = fopen(argv[1], "rb");
     if (fptr == NULL) {
-        printf("Error opening file %s\n", argv[1]);
+        printf("Error opening file %s\n", input);
         return 1;
     }
+
+    // The variables we'll use
+    int counter = 0;
+    uint8_t buffer[512];
+    FILE *curr_out = NULL;
+    size_t bytes_read = 0;
+    while ((bytes_read = fread(buffer, sizeof(uint8_t), 512, fptr)) == 512) {
+        if (ferror(fptr)) {
+            printf("Error when reading from file %s\n", input);
+            break;
+        }
+
+        // Check if found a valid JPEG Signature Header
+        if (isValidJPEG(buffer)) {
+            // Close current file if open
+            if (curr_out != NULL) {
+                fclose(curr_out);
+            }
+
+            // Create new filename and open new file
+            char filename[50];
+            sprintf(filename, "%03d.jpg", counter);
+            curr_out = fopen(filename, "wb");
+            if (curr_out == NULL) {
+                printf("Error opening file %s\n", filename);
+                break;
+            }
+
+            // Write current buffer to file
+            fwrite(buffer, sizeof(uint8_t), bytes_read, curr_out);
+
+            counter++;
+        } else if (curr_out != NULL) {
+            // We're in the middle of a JPEG - keep writing
+            fwrite(buffer, sizeof(uint8_t), bytes_read, curr_out);
+        }
+    }
+
+    // Close files and free memory if needed
+    fclose(fptr);
+    // don't forget to close last file if it's still open
+    if (curr_out != NULL) {
+        fclose(curr_out);
+    }
+    return 0;
 }
