@@ -20,24 +20,26 @@ int isValidJPEG(uint8_t contents[]) {
 }
 
 int main(int argc, char *argv[]) {
+    // Check for correct usage and store filename
     if (argc != 2) {
         printf("Usage: ./recover file\n");
         return 1;
     }
-
     const char *input = argv[1];
 
+    // Open file to search in
     FILE *fptr = fopen(argv[1], "rb");
     if (fptr == NULL) {
         printf("Error opening file %s\n", input);
         return 1;
     }
 
-    // The variables we'll use
+    // The variables we'll use to keep track of things
     int counter = 0;
     uint8_t buffer[512];
     FILE *curr_out = NULL;
     size_t bytes_read = 0;
+    // Main "reading" loop
     while ((bytes_read = fread(buffer, sizeof(uint8_t), 512, fptr)) == 512) {
         if (ferror(fptr)) {
             printf("Error when reading from file %s\n", input);
@@ -54,6 +56,7 @@ int main(int argc, char *argv[]) {
             // Create new filename and open new file
             char filename[50];
             sprintf(filename, "%03d.jpg", counter);
+
             curr_out = fopen(filename, "wb");
             if (curr_out == NULL) {
                 printf("Error opening file %s\n", filename);
