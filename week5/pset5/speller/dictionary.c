@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "dictionary.h"
 
@@ -39,13 +40,28 @@ bool load(const char *dictionary) {
         return false;
     }
 
-    // Add word to hash table
-    node *word = malloc(sizeof(node));
-    if (word == NULL) {
-        printf("Error creating node of hash table\n");
-        return false;
+    // Read all words - they're separated by lines
+    char word[256];
+    while (fgets(word, sizeof(word), dict) != NULL) {
+        // Removing newline character
+        size_t len = strlen(word);
+        if (len > 0 && word[len - 1] == '\n') {
+            word[len - 1] = '\0';
+        }
+
+        // Creating node and inserting word
+        node *n = malloc(sizeof(node));
+        if (n == NULL) {
+            printf("Error creating node for word %s.\n", word);
+            printf("Loading of dictionary %s failed.\n", dictionary);
+            return false;
+        }
+
+        // Huh, this doesn't work
+        n->word = word;
+
+        free(n);
     }
-    // Honestly I don't know what to do now
 
     // close file and return
     fclose(dict);
