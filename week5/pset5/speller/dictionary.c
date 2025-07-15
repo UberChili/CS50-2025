@@ -56,9 +56,9 @@ bool load(const char *dictionary) {
             printf("Loading of dictionary %s failed.\n", dictionary);
             return false;
         }
+        strcpy(n->word, word);
 
-        // Huh, this doesn't work
-        n->word = word;
+        // Adding word to hash table
 
         free(n);
     }
