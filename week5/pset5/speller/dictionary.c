@@ -16,7 +16,7 @@ typedef struct node {
 } node;
 
 // TODO: Choose number of buckets in hash table
-const unsigned int N = 26;
+const unsigned int N = 1000;
 
 // Hash table
 node *table[N];
@@ -70,7 +70,6 @@ unsigned int hash(const char *word) {
         if (isalpha(word[i])) {
             sum += toupper(word[i]);
         }
-        /* sum += word[i]; */
     }
     return sum % N;
 }
