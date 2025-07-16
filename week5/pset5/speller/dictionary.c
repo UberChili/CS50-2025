@@ -20,6 +20,27 @@ const unsigned int N = 26;
 // Hash table
 node *table[N];
 
+// User defined functions
+bool add_word(node *dictionary[], node *word_node, size_t pos) {
+    if (pos > N) { // This is kind of redudnant? Unlikely to happen?
+        return false;
+    }
+
+    // if no element in "bucket"
+    if (dictionary[pos] == NULL) {
+        dictionary[pos] = word_node;
+        dictionary[pos]->next = NULL;
+        return true;
+    }
+
+    // If there were elements in "bucket" - Need to loop thorough them
+    // Or should I just add them in the front?
+    word_node->next = dictionary[pos]->next;
+    dictionary[pos]->next = word_node;
+
+    return true;
+}
+
 // Returns true if word is in dictionary, else false
 bool check(const char *word) {
     // TODO
@@ -49,7 +70,13 @@ bool load(const char *dictionary) {
             word[len - 1] = '\0';
         }
 
-        // Creating node and inserting word
+        // Converting to lowercase
+        for (size_t i = 0; i < len; i++) {
+            if (isalpha(word[i]))
+                word[i] = tolower(word[i]);
+        }
+
+        // Creating node and initializing its word field with word
         node *n = malloc(sizeof(node));
         if (n == NULL) {
             printf("Error creating node for word %s.\n", word);
@@ -59,6 +86,10 @@ bool load(const char *dictionary) {
         strcpy(n->word, word);
 
         // Adding word to hash table
+        printf("Initial of word %s is: %c and its number is: %d\n", n->word,
+               n->word[0], n->word[0] - 'a');
+
+        // Actually adding it
 
         free(n);
     }
