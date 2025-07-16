@@ -23,9 +23,9 @@ node *table[N];
 
 // User defined functions
 bool add_word(node *dictionary[], node *word_node, size_t pos) {
-    if (pos > N) { // This is kind of redudnant? Unlikely to happen?
-        return false;
-    }
+    /* if (pos > N) { // This is kind of redudnant? Unlikely to happen? */
+    /*     return false; */
+    /* } */
 
     // if no element in "bucket"
     if (dictionary[pos] == NULL) {
@@ -36,7 +36,7 @@ bool add_word(node *dictionary[], node *word_node, size_t pos) {
 
     // If there were elements in "bucket" - Need to loop thorough them
     // Or should I just add them in the front?
-    word_node->next = dictionary[pos]->next;
+    word_node->next = dictionary[pos];
     dictionary[pos] = word_node;
 
     return true;
@@ -44,7 +44,6 @@ bool add_word(node *dictionary[], node *word_node, size_t pos) {
 
 // Returns true if word is in dictionary, else false
 bool check(const char *word) {
-    // TODO
     const unsigned int w_hash = hash(word);
 
     if (table[w_hash] == NULL) {
@@ -64,12 +63,14 @@ bool check(const char *word) {
 
 // Hashes word to a number
 unsigned int hash(const char *word) {
-    // TODO: Improve this hash function
     /* return toupper(word[0]) - 'A'; */
-    // IDEA: Sum ASCII values, and take remainder of module number of buckets
+    // Sum ASCII values, and take remainder of module number of buckets
     int sum = 0;
     for (int i = 0, w_len = strlen(word); i < w_len; i++) {
-        sum += word[i];
+        if (isalpha(word[i])) {
+            sum += toupper(word[i]);
+        }
+        /* sum += word[i]; */
     }
     return sum % N;
 }
@@ -91,12 +92,6 @@ bool load(const char *dictionary) {
             word[len - 1] = '\0';
         }
 
-        // Converting to uppercase
-        for (size_t i = 0; i < len; i++) {
-            if (isalpha(word[i]))
-                word[i] = toupper(word[i]);
-        }
-
         // Creating node and initializing its word field with word
         node *n = malloc(sizeof(node));
         if (n == NULL) {
@@ -105,28 +100,12 @@ bool load(const char *dictionary) {
             return false;
         }
         strcpy(n->word, word);
-
-        // Adding word to hash table
-        /* printf("Initial of word %s is: %c and its hashed number would be:
-         * %d\n", */
-        /*        n->word, n->word[0], n->word[0] - 'A'); */
-
-        /* int calculated_hash = 0; */
-        /* for (size_t i = 0, word_len = strlen(word); i < word_len; i++) { */
-        /*     calculated_hash += word[i]; */
-        /* } */
-        /* /\* calculated_hash = calculated_hash / strlen(word) % N; *\/ */
-        /* calculated_hash = calculated_hash % N; */
-        /* printf("Initial of word %s is: %c and its hashed number would be:
-         * %d\n", */
-        /*        n->word, n->word[0], calculated_hash); */
+        n->next = NULL;
 
         // Actually adding it
         if (!add_word(table, n, hash(word))) {
             return false;
         }
-
-        free(n);
     }
 
     // close file and return
@@ -136,8 +115,6 @@ bool load(const char *dictionary) {
 
 // Returns number of words in dictionary if loaded, else 0 if not yet loaded
 unsigned int size(void) {
-    // TODO
-    /* return 0; */
     int count = 0;
     for (size_t i = 0; i < N; i++) {
         if (table[i] != NULL) {
@@ -146,25 +123,24 @@ unsigned int size(void) {
                 count++;
                 ptr = ptr->next;
             }
-        } else {
-            continue;
         }
     }
+
     return count;
 }
 
 // Unloads dictionary from memory, returning true if successful, else false
 bool unload(void) {
-    // TODO
     for (size_t i = 0; i < N; i++) {
         if (table[i] != NULL) {
             node *ptr = table[i];
             node *aux = ptr;
-            while (ptr->next != NULL) {
+            while (ptr != NULL) {
                 aux = ptr;
                 ptr = ptr->next;
                 free(aux);
             }
+            table[i] = NULL;
         }
     }
 
