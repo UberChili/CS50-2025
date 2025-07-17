@@ -23,10 +23,6 @@ node *table[N];
 
 // User defined functions
 bool add_word(node *dictionary[], node *word_node, size_t pos) {
-    /* if (pos > N) { // This is kind of redudnant? Unlikely to happen? */
-    /*     return false; */
-    /* } */
-
     // if no element in "bucket"
     if (dictionary[pos] == NULL) {
         dictionary[pos] = word_node;
@@ -34,8 +30,7 @@ bool add_word(node *dictionary[], node *word_node, size_t pos) {
         return true;
     }
 
-    // If there were elements in "bucket" - Need to loop thorough them
-    // Or should I just add them in the front?
+    // If there were elements in "bucket", add new element to front of the list
     word_node->next = dictionary[pos];
     dictionary[pos] = word_node;
 
@@ -63,7 +58,6 @@ bool check(const char *word) {
 
 // Hashes word to a number
 unsigned int hash(const char *word) {
-    /* return toupper(word[0]) - 'A'; */
     // Sum ASCII values, and take remainder of module number of buckets
     int sum = 0;
     for (int i = 0, w_len = strlen(word); i < w_len; i++) {
